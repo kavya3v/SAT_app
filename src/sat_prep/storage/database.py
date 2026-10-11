@@ -52,5 +52,18 @@ def initialize(db_path: str | Path) -> None:
                 is_correct INTEGER NOT NULL,
                 answered_at TEXT NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS preparation_plan (
+                id INTEGER PRIMARY KEY CHECK (id = 1),
+                graduation_year INTEGER NOT NULL DEFAULT 2030,
+                target_score INTEGER NOT NULL DEFAULT 1400
+            );
+            INSERT OR IGNORE INTO preparation_plan (id) VALUES (1);
+            CREATE TABLE IF NOT EXISTS score_reports (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                test_type TEXT NOT NULL,
+                test_date TEXT NOT NULL,
+                reading_writing INTEGER NOT NULL,
+                math INTEGER NOT NULL
+            );
             """
         )

@@ -6,6 +6,41 @@ from datetime import date, datetime
 from pathlib import Path
 
 from sat_prep.storage.database import connect
+from sat_prep.services.performance import validate_scores
+
+
+def get_preparation_plan(db_path):
+    with connect(db_path) as connection:
+        row = connection.execute("SELECT graduation_year, target_score FROM preparation_plan WHERE id=1").fetchone()
+    return dict(row)
+
+
+def save_preparation_plan(db_path, graduation_year, target_score):
+    if not 2026 <= graduation_year <= 2050 or not 400 <= target_score <= 1600 or target_score % 10:
+        raise ValueError("Use a graduation year from 2026 to 2050 and a target from 400 to 1600 in steps of 10.")
+    with connect(db_path) as connection:
+        connection.execute("UPDATE preparation_plan SET graduation_year=?, target_score=? WHERE id=1",
+                           (graduation_year, target_score))
+
+
+def save_score(db_path, test_type, test_date, reading_writing, math):
+    validate_scores(test_type, reading_writing, math)
+    if test_date > date.today():
+        raise ValueError("A completed test cannot have a future date.")
+    with connect(db_path) as connection:
+        connection.execute("INSERT INTO score_reports (test_type, test_date, reading_writing, math) VALUES (?, ?, ?, ?)",
+                           (test_type, test_date.isoformat(), reading_writing, math))
+
+
+def get_scores(db_path):
+    with connect(db_path) as connection:
+        rows = connection.execute("SELECT * FROM score_reports ORDER BY test_date DESC, id DESC").fetchall()
+    return [dict(row) for row in rows]
+
+
+def delete_score(db_path, score_id):
+    with connect(db_path) as connection:
+        connection.execute("DELETE FROM score_reports WHERE id=?", (score_id,))
 
 
 def get_profile(db_path: str | Path) -> dict[str, object]:

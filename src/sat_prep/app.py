@@ -4,13 +4,22 @@ from pathlib import Path
 
 import streamlit as st
 
-from sat_prep.pages import home, practice, progress
+from sat_prep.pages import dashboard, home, practice, progress
 from sat_prep.services.question_bank import load_questions
+from sat_prep.services.vocabulary import daily_word
 from sat_prep.storage.database import initialize
 
 ROOT = Path(__file__).resolve().parents[2]
 CSV_PATH = ROOT / "SAT_question_bank_MVP.csv"
 DB_PATH = ROOT / "data" / "sat_prep.db"
+
+
+@st.fragment(run_every="60s")
+def _word_of_the_day():
+    word = daily_word()
+    with st.container(border=True):
+        st.caption("SAT word of the day")
+        st.markdown(f"**{word['word'].capitalize()}** — {word['meaning']}")
 
 
 def main():
@@ -31,13 +40,19 @@ def main():
 
     with st.sidebar:
         st.title("SAT Prep")
-        selected_page = st.radio("Navigate", ["Home", "Practice", "Progress"], key="page")
+        selected_page = st.radio("Navigate", ["Home", "Dashboard", "Practice", "Progress"], key="page")
         st.divider()
         st.caption(f"{len(questions)} questions · Math and Reading & Writing")
         st.caption("20-minute daily goal")
 
+    _, word_column = st.columns([3, 2])
+    with word_column:
+        _word_of_the_day()
+
     if selected_page == "Home":
         home.render(DB_PATH)
+    elif selected_page == "Dashboard":
+        dashboard.render(DB_PATH, questions)
     elif selected_page == "Practice":
         practice.render(DB_PATH, questions)
     else:

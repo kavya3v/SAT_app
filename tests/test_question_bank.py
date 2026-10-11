@@ -21,8 +21,30 @@ def test_loads_supplied_csv():
     from pathlib import Path
     path = Path(__file__).resolve().parents[1] / "SAT_question_bank_MVP.csv"
     questions = load_questions(path)
-    assert len(questions) == 50
+    assert len(questions) == 70
     assert {question["Module"] for question in questions} == {"Math", "Reading & Writing"}
+
+
+def test_original_pilot_content_integrity():
+    from collections import Counter
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parents[1] / "SAT_question_bank_MVP.csv"
+    pilot = [q for q in load_questions(path) if q["Question_ID"].startswith("P_")]
+    assert len(pilot) == 20
+    assert Counter(q["Module"] for q in pilot) == {"Math": 10, "Reading & Writing": 10}
+    assert Counter(q["Correct_Answer"] for q in pilot) == dict.fromkeys("ABCD", 5)
+    for module in {q["Module"] for q in pilot}:
+        assert Counter(q["Difficulty"] for q in pilot if q["Module"] == module) == {
+            "Easy": 3, "Medium": 4, "Hard": 3,
+        }
+    for question in pilot:
+        choices = [question[f"Choice_{letter}"] for letter in "ABCD"]
+        assert all(choices) and len(set(choices)) == 4
+        assert question["Correct_Text"] == question[f"Choice_{question['Correct_Answer']}"]
+        assert question["Explanation"]
+        assert "not independently educator-reviewed" in question["Provenance"]
+        assert int(question["Estimated_Time_Sec"]) > 0
 
 
 def test_rejects_duplicate_ids(tmp_path):
