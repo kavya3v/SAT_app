@@ -68,7 +68,7 @@ def render(db_path, questions: list[dict[str, str]]):
     _session_timer(st.session_state["session_started"])
     with st.expander("Practice settings", expanded=False):
         modules = ["All subjects"] + sorted({q["Module"] for q in questions})
-        module = st.selectbox("Subject", modules)
+        module = st.selectbox("Subject", modules, key="practice_subject")
         levels = sorted({q["Difficulty"] for q in questions})
         difficulty = st.selectbox("Difficulty", ["All levels", *levels])
         if st.button("Apply filters"):

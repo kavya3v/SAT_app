@@ -1,6 +1,7 @@
 """Streamlit entry point for the SAT Prep app."""
 
 from pathlib import Path
+import os
 
 import streamlit as st
 
@@ -8,6 +9,7 @@ from sat_prep.pages import dashboard, home, practice, progress
 from sat_prep.services.question_bank import load_questions
 from sat_prep.services.vocabulary import daily_word
 from sat_prep.storage.database import initialize
+from sat_prep.storage.configuration import database_target
 
 ROOT = Path(__file__).resolve().parents[2]
 CSV_PATH = ROOT / "SAT_question_bank_MVP.csv"
@@ -24,14 +26,21 @@ def _word_of_the_day():
 
 def main():
     st.set_page_config(page_title="SAT Prep", page_icon="📘", layout="wide")
-    st.markdown("""
-    <style>
-      .stApp { background: #f7f8fc; }
-      [data-testid="stMetric"] { background: white; padding: 1rem; border-radius: 14px; border: 1px solid #e7e9f2; }
-      div.stButton > button[kind="primary"] { border-radius: 10px; min-height: 3rem; }
-    </style>
-    """, unsafe_allow_html=True)
-    initialize(DB_PATH)
+    try:
+        if 'SAT_DATABASE_URL' in os.environ:
+            settings = {'SAT_DATABASE_URL': os.environ['SAT_DATABASE_URL']}
+        else:
+            try:
+                settings = st.secrets
+                # Access inside the guard: missing secrets files are loaded lazily.
+                settings = {'SAT_DATABASE_URL': settings['SAT_DATABASE_URL']} if 'SAT_DATABASE_URL' in settings else {}
+            except FileNotFoundError:
+                settings = {}
+        db_path = database_target(DB_PATH, settings)
+        initialize(db_path)
+    except Exception:
+        st.error('Could not initialize progress storage. Check the database configuration and connection. Credentials are not displayed.')
+        st.stop()
     try:
         questions = load_questions(CSV_PATH)
     except (OSError, ValueError) as error:
@@ -40,6 +49,7 @@ def main():
 
     with st.sidebar:
         st.title("SAT Prep")
+        st.caption("A little progress, every day.")
         selected_page = st.radio("Navigate", ["Home", "Dashboard", "Practice", "Progress"], key="page")
         st.divider()
         st.caption(f"{len(questions)} questions · Math and Reading & Writing")
@@ -50,13 +60,13 @@ def main():
         _word_of_the_day()
 
     if selected_page == "Home":
-        home.render(DB_PATH)
+        home.render(db_path, questions)
     elif selected_page == "Dashboard":
-        dashboard.render(DB_PATH, questions)
+        dashboard.render(db_path, questions)
     elif selected_page == "Practice":
-        practice.render(DB_PATH, questions)
+        practice.render(db_path, questions)
     else:
-        progress.render(DB_PATH, questions)
+        progress.render(db_path, questions)
 
 
 if __name__ == "__main__":

@@ -78,3 +78,40 @@ def test_daily_word_remains_visible_when_navigating_all_pages(tmp_path):
         assert not app.exception
         assert any(caption.value == 'SAT word of the day' for caption in app.caption)
         assert any(item.value == first_word for item in app.markdown)
+
+
+def test_bad_cloud_configuration_stops_without_exposing_secrets(tmp_path, monkeypatch):
+    secret = 'do-not-display-this-secret'
+    monkeypatch.setenv('SAT_DATABASE_URL', f'https://{secret}@example.com/db')
+    local = tmp_path / 'must-not-exist.db'
+    app = AppTest.from_string(
+        "from pathlib import Path\nfrom sat_prep import app\n"
+        f"app.DB_PATH = Path({str(local)!r})\napp.main()\n", default_timeout=90,
+    ).run()
+    assert not app.exception
+    assert len(app.error) == 1
+    assert secret not in app.error[0].value
+    assert not local.exists()
+
+
+@pytest.mark.parametrize('button_label,subject', [
+    ('Practice math', 'Math'), ('Practice reading & writing', 'Reading & Writing'),
+])
+def test_home_learning_path_starts_the_selected_subject(tmp_path, button_label, subject):
+    from pathlib import Path
+
+    bank = Path(__file__).resolve().parents[1] / 'SAT_question_bank_MVP.csv'
+    db = tmp_path / 'subject.db'
+    app = AppTest.from_string(
+        "from pathlib import Path\nfrom sat_prep import app\n"
+        f"app.DB_PATH = Path({str(db)!r})\napp.CSV_PATH = Path({str(bank)!r})\n"
+        "app.main()\n", default_timeout=90,
+    ).run()
+    assert not app.exception
+    assert any(heading.value == 'Your learning path' for heading in app.subheader)
+    next(button for button in app.button if button.label == button_label).click().run()
+    assert not app.exception
+    assert app.sidebar.radio[0].value == 'Practice'
+    assert next(widget for widget in app.selectbox if widget.label == 'Subject').value == subject
+    with repository.connect(db) as connection:
+        assert connection.execute('SELECT COUNT(*) AS n FROM sessions').fetchone()['n'] == 1

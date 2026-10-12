@@ -6,3 +6,6 @@ __pycache__/
 data/*.db
 .streamlit/secrets.toml
 *.log
+.env
+.env.*
+!.env.example

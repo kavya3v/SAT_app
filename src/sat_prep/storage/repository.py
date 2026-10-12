@@ -56,8 +56,8 @@ def save_profile(db_path: str | Path, name: str) -> None:
 
 def start_session(db_path: str | Path, started_at: datetime) -> int:
     with connect(db_path) as connection:
-        cursor = connection.execute("INSERT INTO sessions (started_at) VALUES (?)", (started_at.isoformat(),))
-        return int(cursor.lastrowid)
+        cursor = connection.execute("INSERT INTO sessions (started_at) VALUES (?) RETURNING id", (started_at.isoformat(),))
+        return int(cursor.fetchone()['id'])
 
 
 def save_answer(

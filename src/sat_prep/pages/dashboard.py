@@ -83,7 +83,7 @@ def render(db_path, questions):
         st.markdown(f"Source: [College Board 2025 annual report]({REPORT_URL}) · Checked October 11, 2026.")
         st.subheader("2025 SAT total-score distribution")
         distribution = pd.DataFrame(sat_2025_distribution())
-        chart = alt.Chart(distribution).mark_bar(color='#4169e1').encode(
+        chart = alt.Chart(distribution).mark_bar(color='#087E8B').encode(
             x=alt.X('Score range:N', sort=distribution['Score range'].tolist(), title='SAT total score'),
             y=alt.Y('Percent of students:Q', title='Students (%)', scale=alt.Scale(domain=[0, 35])),
             tooltip=[alt.Tooltip('Score range:N'), alt.Tooltip('Students:Q', format=','),
