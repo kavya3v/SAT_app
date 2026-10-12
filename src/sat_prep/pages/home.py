@@ -25,27 +25,26 @@ def _welcome(name, graduation_year):
     return f"""
     <style>
       .sat-welcome {{ display:flex; align-items:center; justify-content:space-between;
-        gap:2rem; padding:2.5rem 3rem; border-radius:24px; background:#142D4E;
-        color:#F8F7F3; overflow:hidden; margin:0 0 1.2rem; }}
-      .sat-welcome-copy {{ max-width:620px; }}
+        gap:1.25rem; padding:1.25rem 1.75rem; border-radius:20px; background:#142D4E;
+        color:#F8F7F3; overflow:hidden; margin:0 0 .75rem; }}
+      .sat-welcome-copy {{ max-width:760px; min-width:0; }}
       .sat-eyebrow {{ color:#BDE9E7; font-size:.8rem; font-weight:700;
-        letter-spacing:.12em; text-transform:uppercase; margin:0 0 .9rem; }}
-      .sat-welcome h1 {{ color:#FFFFFF; font-size:clamp(2rem,4vw,3.5rem);
-        letter-spacing:-.035em; line-height:1.08; margin:0 0 1rem; padding:0; }}
-      .sat-welcome-description {{ color:#E4EBEE; font-size:1.05rem; line-height:1.65;
-        margin:0 0 1.25rem; }}
+        letter-spacing:.08em; text-transform:uppercase; margin:0 0 .45rem; }}
+      .sat-welcome h1 {{ color:#FFFFFF; font-size:clamp(1.4rem,2.2vw,2rem);
+        letter-spacing:-.025em; line-height:1.2; margin:0 0 .5rem; padding:0; }}
+      .sat-welcome-description {{ color:#E4EBEE; font-size:.95rem; line-height:1.5;
+        margin:0 0 .65rem; }}
       .sat-goal-tag {{ display:inline-block; border:1px solid #F2C66D; border-radius:999px;
         padding:.35rem .8rem; color:#142D4E; background:#F2C66D; font-size:.8rem; }}
-      .sat-welcome-art {{ width:250px; min-width:160px; flex-shrink:0; }}
-      @media(max-width:700px) {{ .sat-welcome {{ padding:1.6rem; }}
+      .sat-welcome-art {{ width:130px; min-width:100px; flex-shrink:0; }}
+      @media(max-width:700px) {{ .sat-welcome {{ padding:1.1rem; }}
         .sat-welcome-art {{ display:none; }} }}
     </style>
     <section class="sat-welcome" aria-label="Your SAT learning journey">
       <div class="sat-welcome-copy">
         <p class="sat-eyebrow">Your learning journey · Welcome, {escape(str(name))}</p>
-        <h1>Small steps.<br>Big possibilities.</h1>
-        <p class="sat-welcome-description">A little practice today builds confidence for tomorrow.
-        Explore a skill, learn from a mistake, and keep moving forward.</p>
+        <h1>Small steps. Big possibilities.</h1>
+        <p class="sat-welcome-description">Build confidence with one focused practice session today.</p>
         <span class="sat-goal-tag">Class of {int(graduation_year)} · One day at a time</span>
       </div>
       <svg class="sat-welcome-art" viewBox="0 0 280 240" aria-hidden="true" focusable="false">

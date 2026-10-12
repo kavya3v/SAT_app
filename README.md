@@ -123,7 +123,7 @@ Sources checked October 11, 2026: [2025 College Board annual report](https://rep
 
 The Home page uses a navy, teal, and warm ivory palette with a welcoming illustration, encouraging copy, white learning cards, and a prominent **Start today's practice** button. Navy (`#142D4E`) provides structure, teal (`#087E8B`) marks actions and charts, ivory (`#F8F7F3`) softens the background, forest green (`#237A4B`) marks success, and soft gold (`#F2C66D`) highlights the graduation goal and illustration. **Practice math** and **Practice reading & writing** start a 20-minute session with the chosen subject selected. **View my dashboard** and **Review my progress** open the corresponding pages. The daily vocabulary card remains at the top right.
 
-The theme is configured in `.streamlit/config.toml`; the welcome illustration and responsive hero styles are owned by the Home page. The illustration hides on narrow screens to keep the greeting readable. Restart Streamlit after changing theme configuration if the new colors do not appear. The design is independently created for SAT_app, with no Khan Academy assets or affiliation.
+The theme is configured in `.streamlit/config.toml`; the compact welcome illustration and responsive hero styles are owned by the Home page. The illustration hides on narrow screens to keep the greeting readable. Automatic Streamlit `pages/` navigation is disabled through `client.showSidebarNavigation`, leaving one custom sidebar menu. Restart Streamlit after configuration changes if the new colors or navigation do not appear. The design is independently created for SAT_app, with no Khan Academy assets or affiliation.
 
 ## Run locally
 
