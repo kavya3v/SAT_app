@@ -2,6 +2,8 @@
 
 A SAT practice app built with Streamlit for family use. It reads 70 SAT-style questions from `SAT_question_bank_MVP.csv` and saves the student profile, practice history, preparation goals, and test scores in local SQLite or a configured PostgreSQL database such as Neon.
 
+For a presentation walkthrough, see the [Demo Guide](docs/DEMO_GUIDE.md), which covers the MVP, current features, technology stack, architecture, and a five-minute demo script.
+
 ## Current features
 
 | Area | Features |
